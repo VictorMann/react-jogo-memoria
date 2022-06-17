@@ -2,7 +2,7 @@ import * as C from './styles';
 
 type Props = {
   label: string;
-  value: string;
+  value: string | number;
 };
 
 export const InfoItem = ({ label, value }: Props) => {

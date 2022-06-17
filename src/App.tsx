@@ -27,6 +27,41 @@ function App() {
 
   useEffect(() => resetAndCreateGrid(), []);
 
+  // verify if opened are equal
+  useEffect(() => {
+    if (shownCount == 2) {
+      let tempGrip = [...gridItems];
+      let opened = gridItems.filter(item => item.shown === true);
+      if (opened.length == 2) {
+        // if both are equal, make every shown permanent
+        if (opened[0].item === opened[1].item) {
+          tempGrip.map(item => {
+            if (item.shown) {
+              item.permanentShown = true;
+              item.shown = false;
+            }
+          });
+          setGridItems(tempGrip);
+          setShownCount(0);
+
+        // if they are NOT equal, close all shown
+        } else {
+          setTimeout(() => {
+            tempGrip.map(item => item.shown = false);
+            setGridItems(tempGrip);
+            setShownCount(0);
+          }, 1000);
+        }
+
+        setMoveCount(moveCount + 1);
+      }
+    }
+
+    // verify if game is over
+    setPlaying(!gridItems.every(item => item.permanentShown));
+
+  }, [shownCount, gridItems]);
+
   const resetAndCreateGrid = () => {
     // passo 1 - resetar o jogo
     setTimeELapsed(0);
@@ -62,7 +97,16 @@ function App() {
   };
 
   const handleItemClick = (index: number) => {
+    if (palying && index !== null && shownCount < 2) {
+      let tmpGrid = [...gridItems];
 
+      if (tmpGrid[index].permanentShown === false && tmpGrid[index].shown === false) {
+        tmpGrid[index].shown = true;
+        setShownCount(shownCount + 1);
+      }
+
+      setGridItems(tmpGrid);
+    }
   };
 
   return (
@@ -73,13 +117,11 @@ function App() {
         </C.LogoLink>
         <C.InfoArea>
           <InfoItem label="Tempo" value={formatTimeElapsed(timeElapsed)} />
-          <InfoItem label="Movimentos" value="0" />
+          <InfoItem label="Movimentos" value={moveCount} />
         </C.InfoArea>
 
         <Button label="Reiniciar" icon={RestartIcon} onClick={resetAndCreateGrid} />
-
       </C.Info>
-
 
       <C.GridArea>
         <C.Grid>
@@ -91,8 +133,6 @@ function App() {
           )}
         </C.Grid>
       </C.GridArea>
-
-
     </C.Container>
   );
 }
