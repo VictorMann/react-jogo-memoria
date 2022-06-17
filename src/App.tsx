@@ -9,7 +9,7 @@ import { GridItemType } from './types/GridItemType';
 import { GridItem } from './components/GridItem';
 
 import { items } from './data/items';
-
+import { formatTimeElapsed } from './helpers';
 
 function App() {
   const [palying, setPlaying] = useState<boolean>(false);
@@ -18,6 +18,12 @@ function App() {
   const [shownCount, setShownCount] = useState<number>(0);
   const [gridItems, setGridItems] = useState<GridItemType[]>([]);
 
+  useEffect(() => {
+    let timer = setInterval(() => {
+      if (palying) setTimeELapsed(timeElapsed + 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  },[palying, timeElapsed]);
 
   useEffect(() => resetAndCreateGrid(), []);
 
@@ -65,9 +71,8 @@ function App() {
         <C.LogoLink href="">
           <img src={logoImage} width="200" alt="" />
         </C.LogoLink>
-
         <C.InfoArea>
-          <InfoItem label="Tempo" value="00:00" />
+          <InfoItem label="Tempo" value={formatTimeElapsed(timeElapsed)} />
           <InfoItem label="Movimentos" value="0" />
         </C.InfoArea>
 
